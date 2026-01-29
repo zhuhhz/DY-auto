@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>Douyin Auto Reply</title>
+  <style>
+    body { font-family: system-ui; width: 200px; padding: 10px; }
+    textarea { width: 100%; box-sizing: border-box; }
+    button { margin-top: 6px; width: 100%; }
+  </style>
+</head>
+<body>
+  <h4>Douyin 自动回复</h4>
+  <textarea id="replyText" rows="3"></textarea>
+  <button id="saveBtn">保存话术</button>
+  <button id="manualBtn">手动回复</button>
+
+  <script>
+    const textarea = document.getElementById('replyText');
+    chrome.storage.local.get({ REPLY_TEXT: "" }, res => textarea.value = res.REPLY_TEXT);
+    document.getElementById('saveBtn').addEventListener('click', () => {
+      chrome.storage.local.set({ REPLY_TEXT: textarea.value }, () => alert("已保存"));
+    });
+    document.getElementById('manualBtn').addEventListener('click', () => {
+      chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
+        chrome.scripting.executeScript({ target: { tabId: tabs[0].id }, func: () => window.tryAutoReply?.() });
+      });
+    });
+  </script>
+</body>
+</html>
